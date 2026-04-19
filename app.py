@@ -11,7 +11,7 @@ st.markdown("Upload a sequence of process sensor readings to check for anomalies
 
 @st.cache_resource
 def load_model():
-    model = tf.keras.models.load_model('lstm_autoencoder.h5')
+    model = tf.keras.models.load_model('lstm_autoencoder.h5', compile=False)
     return model
 
 @st.cache_resource
