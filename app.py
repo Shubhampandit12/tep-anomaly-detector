@@ -38,29 +38,23 @@ uploaded_file = st.file_uploader("Upload a CSV with 52 sensor columns", type=["c
 
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
-
-    # Drop non-sensor columns if present
     drop_cols = [c for c in ['faultNumber', 'simulationRun', 'sample'] if c in df.columns]
     df = df.drop(columns=drop_cols)
 
     if df.shape[1] != 52:
         st.error(f"Expected 52 feature columns, but got {df.shape[1]}. Please check your file.")
     elif len(df) < 50:
-        st.error("Need at least 50 rows (timesteps) to form one window.")
+        st.error("Need at least 50 rows to form one window.")
     else:
         data = scaler.transform(df.values)
-
-        # Build sliding windows
         WINDOW = 50
         sequences = []
         for i in range(0, len(data) - WINDOW + 1):
             sequences.append(data[i:i+WINDOW])
         sequences = np.array(sequences)
 
-        # Reconstruct
         reconstructed = model.predict(sequences, verbose=0)
         errors = np.mean(np.mean(np.abs(sequences - reconstructed), axis=2), axis=1)
-
         anomalies = errors > THRESHOLD
         n_anomalies = int(np.sum(anomalies))
         anomaly_pct = 100 * n_anomalies / len(errors)
@@ -71,7 +65,6 @@ if uploaded_file is not None:
         col2.metric("Anomalous Windows", n_anomalies)
         col3.metric("Anomaly %", f"{anomaly_pct:.1f}%")
 
-        # Plot reconstruction error
         fig, ax = plt.subplots(figsize=(10, 3))
         ax.plot(errors, label="Reconstruction Error", color="steelblue", linewidth=0.8)
         ax.axhline(THRESHOLD, color="red", linestyle="--", label=f"Threshold ({THRESHOLD:.4f})")
