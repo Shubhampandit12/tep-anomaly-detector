@@ -18,7 +18,7 @@ st.markdown("Upload a sequence of process sensor readings to check for anomalies
 # ── Load Model & Scaler ───────────────────────────────────────────────────────
 @st.cache_resource
 def load_model():
-    model = tf.keras.models.load_model('transformer_autoencoder_best.keras')
+   model = tf.keras.models.load_model('lstm_autoencoder.h5')
     return model
 
 @st.cache_resource
@@ -28,11 +28,11 @@ def load_scaler():
 
 model     = load_model()
 scaler    = load_scaler()
-THRESHOLD = 0.016840
+THRESHOLD = 0.009919
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.header("ℹ️ Model Info")
-    st.write("**Model:** Transformer Autoencoder")
+    st.write("**Model:** LSTM Autoencoder")
     st.write("**Dataset:** Tennessee Eastman Process")
     st.write("**Input Shape:** (50 timesteps × 52 features)")
     st.write(f"**Anomaly Threshold:** {THRESHOLD:.6f}")
